@@ -383,6 +383,9 @@ func commandWithSudo(cmd ...string) *exec.Cmd {
 	if u, err := user.Current(); err == nil && u.Uid == "0" {
 		return exec.Command(cmd[0], cmd[1:]...)
 	}
+	if binaryExists("doas") {
+		return exec.Command("doas", cmd...)
+	}
 	if !binaryExists("sudo") {
 		sudoWarningOnce.Do(func() {
 			log.Println(`Warning: "sudo" is not available, and mkcert is not running as root. The (un)install operation might fail. ⚠️`)
